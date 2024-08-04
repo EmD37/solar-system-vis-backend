@@ -1,24 +1,39 @@
 from enum import Enum
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from models import *
+from presets import p1
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class Preset(int, Enum):
-    preset_one: 1
-    preset_two: 2
-    preset_three: 3
+    one = 1
+    two = 2
+    three = 3
 
 
 @app.get("/")
 async def default():
-    return get_preset(Preset.preset_one)
+    return {"data": p1()}
 
 @app.get("/preset/{preset}")
 async def get_preset(preset: Preset):
-    return {"data": ResponseModel}
+    if preset is Preset.one:
+        return {"data": p1()}
 
 @app.get("/preset/{preset}/export")
 async def get_preset_export(preset: Preset):
@@ -26,8 +41,4 @@ async def get_preset_export(preset: Preset):
 
 @app.post("/render")
 async def render(request_model: RequestModel):
-    return {"data": ResponseModel}
-
-@app.post("/export")
-async def export(request_model: RequestModel):
     return {"data": ResponseModel}
